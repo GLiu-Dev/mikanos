@@ -496,6 +496,20 @@ EFI_STATUS EFIAPI UefiMain(
  
   // 打印内核加载地址与实际读取字节数，确认加载成功
   Print(L"Kernel: 0x%0lx (%lu bytes)\n", kernel_base_addr, kernel_file_size);
+
+  /*
+  用循环写 GOP FrameBuffer 全屏白色，只是把图形画面刷白；
+  但 UEFI 的 Print() 走的是 EFI_SIMPLE_TEXT_OUTPUT_PROTOCOL（文本控制台，标准字符输出），
+  它有独立的前景 / 背景文本颜色寄存器，二者互不干扰。
+
+  1, 两套输出互相独立
+    a. GOP：图形层，像素直接操作，用于内核图形、全屏画面；
+    b. ConOut（SimpleTextOutput）：文本层，Print/PrintLib 全部走这个，独立字符调色板、光标、文本缓存。
+  2, 手动写 FrameBuffer 只能改像素底色，不能修改文本控制台的字符颜色属性。
+  3, UEFI 驱动（FS、BlockIO、DiskIo）执行文件 / 内存操作时，极大概率临时篡改 ConOut 文本属性，
+    这是实验里文字变色的核心原因。
+  4, ExitBootServices 之后 ConOut 彻底失效，不能再调用 Print，这也是为什么后面报错打印需要在退出前完成。
+  */
  
   /* ── 阶段 6：退出 UEFI Boot Services ────────────────────────────────── */
   // #@@range_begin(exit_bs)
