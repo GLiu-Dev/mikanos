@@ -1,5 +1,26 @@
-[Defines]
+[Defines]                          ; 【固定段名】定义这个Package的基础元信息段，所有dec文件必须有
   DEC_SPECIFICATION              = 0x00010005
+                                   ; DEC文件遵循的EDKII DEC规范版本 1.5
+                                   ; 0x00010005 = Major=1, Minor=5
+                                   ; 含义：这个dec的语法规则符合EDK II Spec 1.5，编译器(build)按这个规则解析本文件
   PACKAGE_NAME                   = MikanLoaderPkg
+                                   ; 包名称，EDK构建系统识别的包名，目录名一般和这个保持一致
+                                   ; 后续在 .inf 的 PACKAGE_DEPENDENCIES 里就写 MikanLoaderPkg
   PACKAGE_GUID                   = 452eae8e-71e9-11e8-a243-df3f1ffdebe1
+                                   ; Package唯一GUID，用来全局唯一标识这个软件包
+                                   ; EDKII里包、Protocol、PPI都用GUID区分，防止重名冲突
   PACKAGE_VERSION                = 0.1
+                                   ; 本Package版本号，自定义，方便版本管理，build系统仅记录，不做强制版本校验
+
+; 这是 EDK II 的 **Package Declaration 文件（`.dec`）**，属于 UEFI 开发框架。
+; mikanos day02a 是 (Mikan) OS 的 UEFI Loader 包定义文件。
+; `.dec` 的作用：描述一个 Package（软件包）对外暴露的公共信息，供其他包（`.inf`、其他 dec）引用，
+; 声明包名、GUID、版本、导出的 PPI/Protocol/Include 路径等。
+
+; 1. MikanLoaderPkg 是 mikannos 的 UEFI 引导包，**负责写 UEFI 应用程序（Loader）**，这个 Loader 在 UEFI 固件下运行，
+;    用来初始化环境、加载内核。
+; 2. `.dec` 是**包对外接口声明文件**，和 `.inf`（模块描述文件）区分：
+;   - `.dec`：Package 级别，整个包的公共声明，可以放公共头文件路径、导出的 Protocol GUID、PPI、库声明，供别的包引用。
+;   - `.inf`：Module 级别，描述单个模块（驱动 / UEFI app）源码、库依赖。
+; MikanLoaderPkg.dec 定义包 → MikanLoader.inf 写模块源码和依赖 → build命令读取dec+inf，编译生成UEFI应用(.efi)
+;

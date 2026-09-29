@@ -1,23 +1,49 @@
+;----------------------------------------------------------------------
+; Loader.inf (Module Information File)
+; MikanOS day02a
+; 模块：Loader，UEFI Application，编译输出 Loader.efi
+;----------------------------------------------------------------------
 [Defines]
   INF_VERSION                    = 0x00010006
+                                  ; INF规范版本 1.6
+                                  ; 旧写法INF_SPECIFICATION，新版EDK2改用INF_VERSION
+                                  ; 0x00010006 = Major=1, Minor=6
   BASE_NAME                      = Loader
+                                  ; 模块基础名，编译产物为 Loader.efi
   FILE_GUID                      = c9d0d202-71e9-11e8-9e52-cfbfd0063fbf
+                                  ; 当前模块唯一GUID（模块级GUID，不是Package的GUID）
+                                  ; EDK2用GUID区分每个模块，必须全局唯一
   MODULE_TYPE                    = UEFI_APPLICATION
+                                  ; 模块类型：UEFI应用程序
+                                  ; 可以在UEFI Shell里直接运行，生成efi程序
   VERSION_STRING                 = 0.1
+                                  ; 自定义版本字符串，仅标记，构建系统不校验版本
   ENTRY_POINT                    = UefiMain
-
+                                  ; 指定C代码入口函数名称，对应Main.c里的UefiMain函数
 #  VALID_ARCHITECTURES           = X64
+                                  ; #代表注释，这一行暂时关闭
+                                  ; VALID_ARCHITECTURES：声明本模块支持的CPU架构
+                                  ; X64 = 64位x86。取消注释后只编译x64版本
 
 [Sources]
   Main.c
+                                  ; 源码文件列表，相对于本inf文件路径
+                                  ; 这里只有Main.c，就是UEFI程序的源代码
 
 [Packages]
   MdePkg/MdePkg.dec
+                                  ; 依赖的EDK2基础包
+                                  ; MdePkg是核心包，提供Uefi.h、各种Protocol、基础类型定义
 
 [LibraryClasses]
   UefiLib
+                                  ; UEFI简易工具库：Print()控制台输出等常用封装API
   UefiApplicationEntryPoint
+                                  ; UEFI Application入口桩库
+                                  ; EDK2底层入口会调用我们写的UefiMain函数
 
 [Guids]
+                                  ; 本模块用到/定义的GUID列表，day02a暂时为空
 
 [Protocols]
+                                  ; 本模块用到/安装的Protocol，day02a暂时为空
